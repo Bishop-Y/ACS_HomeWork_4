@@ -252,6 +252,9 @@ int main(int argc, char *argv[]) {
     pthread_join(match, nullptr);
     pthread_join(paper, nullptr);
     pthread_join(tobacco, nullptr);
+    
+    // Уничтожение мьютекса
+    pthread_mutex_destroy(&busy);
 
     // Вывод в файл
     if (argc == 3) {
