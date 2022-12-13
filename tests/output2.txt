@@ -1,0 +1,17 @@
+- - - - - - - - - - - - - - - -
+Broker watch for ingredients.
+Broker puts: tobacco and match.
+
+Smoker with paper is smoking.
+- - - - - - - - - - - - - - - -
+Broker watch for ingredients.
+Broker puts: paper and match.
+
+Smoker with tobacco is smoking.
+- - - - - - - - - - - - - - - -
+Broker watch for ingredients.
+Broker puts: paper and match.
+
+Smoker with tobacco is smoking.
+- - - - - - - - - - - - - - - -
+Not enough ingredients. It remains only: 1 match.
