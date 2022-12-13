@@ -241,6 +241,9 @@ int main(int argc, char *argv[]) {
     // Объявление потоков
     pthread_t match, paper, tobacco, broker;
 
+    // Инициализация мьютекса
+    pthread_mutex_init(&busy, nullptr);
+
     // Создание потоков
     pthread_create(&broker, nullptr, broker_working, nullptr);
     pthread_create(&match, nullptr, match_smoker, nullptr);
@@ -252,7 +255,7 @@ int main(int argc, char *argv[]) {
     pthread_join(match, nullptr);
     pthread_join(paper, nullptr);
     pthread_join(tobacco, nullptr);
-    
+
     // Уничтожение мьютекса
     pthread_mutex_destroy(&busy);
 
