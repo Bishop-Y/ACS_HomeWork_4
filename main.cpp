@@ -14,7 +14,7 @@ pthread_mutex_t busy;
 vector<int> ingredients(3);
 
 // Названия ингридиентов
-vector<string> name_of_ingredients = {"tobacco", "paper", "match"};
+vector<string> name_of_ingredients(3);
 
 // Флаг, который показывает, какой поток должен совершить действия
 int who_print = 0;
@@ -29,15 +29,22 @@ void show_message(const string &message) {
     cout << message;
 }
 
-// Остановка отработки всех потоков
+// Остановка отработки всех потоков на полторы секунды
 void pause_all() {
-    sleep(2);
+    usleep(1500000);
 }
 
 // Проверка на то, может ли брокер выдать нужное количество ингридиентов для скрутки сигареты
 bool check() {
-    if (ingredients[0] + ingredients[1] >= 2 || ingredients[1] + ingredients[2] >= 2 ||
-        ingredients[0] + ingredients[2] >= 2) {
+    int count_of_zeros = 0;
+    for (size_t i = 0; i < ingredients.size(); ++i) {
+        if (ingredients[i] == 0) {
+            ++count_of_zeros;
+        }
+    }
+    if (count_of_zeros < 2 && (ingredients[0] + ingredients[1] >= 2 || ingredients[1] + ingredients[2] >= 2 ||
+                               ingredients[0] + ingredients[2] >= 2)) {
+
         return true;
     }
     return false;
@@ -65,7 +72,6 @@ void *broker_working(void *params) {
                 while (!flag) {
                     srandom(seed);
                     ++seed;
-
                     // Индексы для выбора ингридиентов
                     index1 = random() % 3;
                     index2 = random() % 3;
@@ -86,17 +92,17 @@ void *broker_working(void *params) {
         }
     }
     show_message("- - - - - - - - - - - - - - - -\n");
-    
+
     // Флаг для вывода сообщения
     int index = -1;
     if (ingredients[0] != 0) {
         index = 0;
     }
     if (ingredients[1] != 0) {
-        index = 0;
+        index = 1;
     }
     if (ingredients[2] != 0) {
-        index = 3;
+        index = 2;
     }
     if (index != -1) {
         show_message("Not enough ingredients. It remains only: " + to_string(ingredients[index]) + " " +
@@ -139,7 +145,7 @@ void *paper_smoker(void *params) {
 
             // Отработка только курильщика с бумагой
             pthread_mutex_lock(&busy);
-            show_message("Smoker with paper smokes is smoking.\n");
+            show_message("Smoker with paper is smoking.\n");
             pause_all();
             who_print = 0;
             // Окончание отработки курильщика с бумагой
@@ -170,17 +176,44 @@ void *match_smoker(void *params) {
     return nullptr;
 }
 
+void random_ingredients(int i) {
+    srandom(i);
+    ingredients[0] = random() % 11;
+    ingredients[1] = random() % 11;
+    ingredients[2] = random() % 11;
+    cout << "Broker has " << ingredients[0] << " of tobacco, " << ingredients[1] << " of paper, " << ingredients[2]
+         << " of match.\n";
+}
+
 
 int main(int argc, char *argv[]) {
+    name_of_ingredients[0] = "tobacco";
+    name_of_ingredients[1] = "paper";
+    name_of_ingredients[2] = "match";
 
     // Ввод с консоли
     if (argc == 1) {
-        cout << "Type count of tobacco (from 0 to 10): ";
-        cin >> ingredients[0];
-        cout << "Type count of paper (from 0 to 10): ";
-        cin >> ingredients[1];
-        cout << "Type count of match (from 0 to 10): ";
-        cin >> ingredients[2];
+        int type;
+        cout << "Enter type of filling: manual (1) or random (number != 1): ";
+        cin >> type;
+        if (type == 1) {
+            cout << "Type count of tobacco (from 0 to 10): ";
+            cin >> ingredients[0];
+            cout << "Type count of paper (from 0 to 10): ";
+            cin >> ingredients[1];
+            cout << "Type count of match (from 0 to 10): ";
+            cin >> ingredients[2];
+        } else {
+            int seed;
+            cout << "Enter seed: ";
+            cin >> seed;
+            random_ingredients(seed);
+        }
+    }
+
+    // Рандомные ингридиенты с командной строки
+    if (argc == 2) {
+        random_ingredients(stoi(argv[1]));
     }
 
     // Ввод с файла
